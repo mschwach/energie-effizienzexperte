@@ -1,56 +1,48 @@
-const mistralai = require('mistralai');
+const axios = require('axios');
 
 exports.handler = async (event) => {
-    // Le Chat API-Konfiguration
-    const client = new mistralai.Client(process.env.LE_CHAT_API_KEY);
+  try {
+    // Mock-Daten für Tests
+    const mockResponse = {
+      foerderungen: [
+        { programm: "KfW 455", art: "Zuschuss", hoehe: "30%", maxBetrag: 30000 },
+        { programm: "BAFA-BEG-EM", art: "Zuschuss", hoehe: "20%", maxBetrag: 20000 }
+      ],
+      gesamtFoerderung: 50000,
+      prozent: 50
+    };
 
-    // Daten aus dem Frontend
-    const data = JSON.parse(event.body);
-
-    // Prompt für Le Chat
-    const prompt = `
-    Berechne die Förderungen für ein Gebäude in Deutschland (Stand 2025) mit folgenden Daten:
-    - Baujahr: ${data.baujahr}
-    - Wohnfläche: ${data.wohnflaeche} m²
-    - Investition: ${data.investition} €
-    - PLZ: ${data.plz}
-    - Maßnahmen: ${data.massnahmen.join(', ')}
-    ${data.file ? '- Anhang: Stromrechnung/Bauplan (Base64-encoded)' : ''}
-
-    Berücksichtige aktuelle KfW-, BAFA- und lokale Förderprogramme.
-    Gib das Ergebnis als JSON zurück mit:
-    - Liste der Förderprogramme (Name, Art, Höhe in %, max. Betrag in €)
-    - Gesamtförderung (€ und % der Investition)
-    - Optional: Link zu einem PDF-Sanierungsplan.
-    `;
-
-    try {
-        // Le Chat API aufrufen
-        const response = await client.chat({
-            model: 'mistral-large-latest',
-            messages: [{ role: 'user', content: prompt }]
-        });
-
-        // Antwort parsen (Beispiel)
-        const result = {
-            foerderungen: [
-                { programm: "KfW 455", art: "Zuschuss", hoehe: "30%", maxBetrag: 30000 },
-                { programm: "BAFA-BEG-EM", art: "Zuschuss", hoehe: "20%", maxBetrag: 20000 },
-                { programm: "Kommunalbonus München", art: "Zuschuss", hoehe: "10%", maxBetrag: 5000 }
-            ],
-            gesamtFoerderung: 55000,
-            prozent: 55,
-            pdfLink: "/sanierungsplan.pdf"  // Wird in Schritt 4 generiert
-        };
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify(result)
-        };
-    } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: "Fehler bei der Berechnung" })
-        };
+    // Falls ein API-Key vorhanden ist, nutze die echte Mistral-API
+    if (process.env.LE_CHAT_API_KEY) {
+      const response = await axios.post(
+        'https://api.mistral.ai/v1/chat/completions',
+        {
+          model: 'mistral-tiny',
+          messages: [{ role: 'user', content: 'Berechne Förderungen für ein Gebäude mit folgenden Daten: Baujahr: vor 1978, Wohnfläche: 100 m², Investition: 30000 €.' }]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.LE_CHAT_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      return {
+        statusCode: 200,
+        body: JSON.stringify(response.data)
+      };
+    } else {
+      // Nutze Mock-Daten, falls kein API-Key vorhanden ist
+      return {
+        statusCode: 200,
+        body: JSON.stringify(mockResponse)
+      };
     }
+  } catch (error) {
+    console.error("Fehler:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Ein Fehler ist aufgetreten: " + error.message })
+    };
+  }
 };
