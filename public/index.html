@@ -1,53 +1,352 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fördermittelcheck | Energie-Effizienzexperte</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fördermittelcheck für Ihre Sanierung</title>
+  <style>
+    :root {
+      --primary: #2ecc71;
+      --secondary: #3498db;
+      --dark: #2c3e50;
+      --light: #ecf0f1;
+      --danger: #e74c3c;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px 0;
+      background-color: var(--dark);
+      color: white;
+      border-radius: 5px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    select, input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: normal;
+      margin: 0;
+    }
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1em;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #27ae60;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: var(--dark);
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .result-container {
+      display: none;
+      margin-top: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .result-container.visible {
+      display: block;
+    }
+    .disclaimer {
+      background: var(--light);
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: var(--dark);
+    }
+    .disclaimer a {
+      color: var(--secondary);
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+    .error {
+      color: var(--danger);
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      table {
+        font-size: 0.9em;
+      }
+      th, td {
+        padding: 8px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Fördermittelcheck für Ihre Sanierung</h1>
-        <form id="sanierungsForm">
-            <div class="form-group">
-                <label for="baujahr">Baujahr:</label>
-                <select id="baujahr" required>
-                    <option value="">-- Bitte wählen --</option>
-                    <option value="vor_1978">vor 1978</option>
-                    <option value="1978_2002">1978–2002</option>
-                    <option value="nach_2002">nach 2002</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="wohnflaeche">Wohnfläche (m²):</label>
-                <input type="number" id="wohnflaeche" min="20" required>
-            </div>
-            <div class="form-group">
-                <label for="investition">Geplante Investition (€):</label>
-                <input type="number" id="investition" min="1000" required>
-            </div>
-            <div class="form-group">
-                <label for="plz">PLZ (für lokale Förderungen):</label>
-                <input type="text" id="plz" required>
-            </div>
-            <div class="form-group">
-                <label>Geplante Maßnahmen:</label>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="daemmung" value="Dämmung"> <label for="daemmung">Dämmung</label>
-                    <input type="checkbox" id="fenster" value="Fenster"> <label for="fenster">Fenster</label>
-                    <input type="checkbox" id="heizung" value="Heizung"> <label for="heizung">Heizungstausch</label>
-                    <input type="checkbox" id="pv" value="PV-Anlage"> <label for="pv">PV-Anlage</label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="fileUpload">Stromrechnung/Bauplan (optional):</label>
-                <input type="file" id="fileUpload" accept=".csv,.xlsx,.pdf,.jpg">
-            </div>
-            <button type="submit">Förderung berechnen</button>
-        </form>
-        <div id="results"></div>
+  <header>
+    <h1>Fördermittelcheck für Ihre Sanierung</h1>
+    <p>Prüfen Sie Ihre Fördermöglichkeiten für 2025 – kostenlos und unverbindlich</p>
+  </header>
+
+  <div class="container">
+    <form id="foerderForm">
+      <div class="form-group">
+        <label for="baujahr">Baujahr:</label>
+        <select id="baujahr" required>
+          <option value="">-- Bitte wählen --</option>
+          <option value="vor-1978">vor 1978</option>
+          <option value="1978-2002">1978–2002</option>
+          <option value="2002-2014">2002–2014</option>
+          <option value="nach-2014">nach 2014</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="wohnflaeche">Wohnfläche (m²):</label>
+        <input type="number" id="wohnflaeche" min="20" max="1000" required>
+      </div>
+
+      <div class="form-group">
+        <label for="investition">Geplante Investition (€):</label>
+        <input type="number" id="investition" min="1000" max="500000" required>
+      </div>
+
+      <div class="form-group">
+        <label for="plz">PLZ (für lokale Förderungen):</label>
+        <input type="text" id="plz" pattern="\d{5}" placeholder="z. B. 33449" required>
+      </div>
+
+      <div class="form-group">
+        <label>Geplante Maßnahmen:</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="massnahme" value="daemmung"> Dämmung</label>
+          <label><input type="checkbox" name="massnahme" value="fenster"> Fenster</label>
+          <label><input type="checkbox" name="massnahme" value="heizung"> Heizungstausch</label>
+          <label><input type="checkbox" name="massnahme" value="pv"> PV-Anlage</label>
+          <label><input type="checkbox" name="massnahme" value="lueftung"> Lüftung</label>
+          <label><input type="checkbox" name="massnahme" value="barrierefrei"> Barrierefreiheit</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="stromrechnung">Stromrechnung/Bauplan (optional):</label>
+        <input type="file" id="stromrechnung" accept=".pdf,.jpg,.png">
+      </div>
+
+      <button type="button" id="foerderungBerechnen">Förderung berechnen</button>
+    </form>
+
+    <div class="loading" id="loading">
+      <p>Berechne Ihre Fördermöglichkeiten... <br><small>(Dies kann bis zu 30 Sekunden dauern)</small></p>
     </div>
-    <script src="script.js"></script>
+
+    <div class="result-container" id="resultContainer">
+      <h2>Ihre Fördermöglichkeiten (Stand 2025):</h2>
+      <table id="foerdertabelle">
+        <thead>
+          <tr>
+            <th>Programm</th>
+            <th>Förderart</th>
+            <th>Höhe</th>
+            <th>Maximaler Betrag</th>
+            <th>Bedingungen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamisch gefüllt -->
+        </tbody>
+      </table>
+
+      <div id="empfehlungen"></div>
+      <div id="gesamtfoerderung" style="font-weight: bold; margin-top: 15px;"></div>
+
+      <div class="disclaimer">
+        <p>
+          <strong>Hinweis:</strong> Die berechneten Fördermöglichkeiten sind unverbindlich und basieren auf den aktuellen Richtlinien (Stand 2025).
+          Für eine verbindliche Auskunft konsultieren Sie bitte einen
+          <a href="https://www.energie-effizienz-experten.de/" target="_blank">zertifizierten Energieberater</a>
+          oder die Förderstellen direkt (z. B.
+          <a href="https://www.kfw.de" target="_blank">KfW</a>,
+          <a href="https://www.bafa.de" target="_blank">BAFA</a>).
+        </p>
+        <p>
+          <strong>Wichtig:</strong> Einige Förderprogramme können nicht kombiniert werden (z. B. KfW 455 und BEG-EM für dieselbe Maßnahme).
+          Die tatsächliche Förderung hängt von Ihrer individuellen Situation ab.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const berechnenBtn = document.getElementById('foerderungBerechnen');
+      const resultContainer = document.getElementById('resultContainer');
+      const loading = document.getElementById('loading');
+      const foerderTable = document.querySelector('#foerdertabelle tbody');
+      const empfehlungenDiv = document.getElementById('empfehlungen');
+      const gesamtfoerderungDiv = document.getElementById('gesamtfoerderung');
+
+      berechnenBtn.addEventListener('click', async function() {
+        // Validierung
+        const baujahr = document.getElementById('baujahr').value;
+        const wohnflaeche = document.getElementById('wohnflaeche').value;
+        const investition = document.getElementById('investition').value;
+        const plz = document.getElementById('plz').value;
+
+        if (!baujahr || !wohnflaeche || !investition || !plz) {
+          alert('Bitte füllen Sie alle Pflichtfelder aus.');
+          return;
+        }
+
+        // Ladezustand anzeigen
+        loading.style.display = 'block';
+        resultContainer.classList.remove('visible');
+        foerderTable.innerHTML = '';
+        empfehlungenDiv.innerHTML = '';
+        gesamtfoerderungDiv.textContent = '';
+
+        try {
+          // Daten sammeln
+          const massnahmen = Array.from(document.querySelectorAll('input[name="massnahme"]:checked'))
+            .map(el => el.value);
+
+          const requestData = {
+            baujahr,
+            wohnflaeche: parseInt(wohnflaeche),
+            investition: parseInt(investition),
+            plz,
+            massnahmen
+          };
+
+          // API aufrufen
+          const response = await fetch('/.netlify/functions/foerdercheck', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+          });
+
+          if (!response.ok) {
+            throw new Error(`API-Fehler: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          // Ergebnisse anzeigen
+          if (data.foerdermoeglichkeiten || data.foerderungen) {
+            const foerderungen = data.foerdermoeglichkeiten || data.foerderungen;
+
+            foerderungen.forEach(programm => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${programm.programm || programm.Programm}</td>
+                <td>${programm.art || 'Zuschuss'}</td>
+                <td>${programm.hoehe || programm.Höhe}</td>
+                <td>${programm.maxBetrag || programm['Maximaler Betrag']} €</td>
+                <td>${Array.isArray(programm.bedingungen) ? programm.bedingungen.join(', ') : programm.bedingungen || 'Keine Angaben'}</td>
+              `;
+              foerderTable.appendChild(row);
+            });
+
+            // Empfehlungen anzeigen
+            if (data.empfehlung) {
+              empfehlungenDiv.innerHTML = `
+                <h3>Empfehlungen:</h3>
+                <ul>
+                  ${data.empfehlung.map(e => `<li>${e}</li>`).join('')}
+                </ul>
+              `;
+            }
+
+            // Gesamtförderung anzeigen
+            if (data.gesamtfoerderung || data.Gesamtförderung) {
+              const gesamt = data.gesamtfoerderung || data.Gesamtförderung;
+              const prozent = data.prozent || Math.round((gesamt / investition) * 100);
+              gesamtfoerderungDiv.innerHTML = `
+                <p><strong>Gesamtförderung:</strong> ${gesamt.toLocaleString()} €
+                (ca. ${prozent}% Ihrer Investition)</p>
+              `;
+            }
+
+            resultContainer.classList.add('visible');
+          } else {
+            empfehlungenDiv.innerHTML = `
+              <p class="error">Leider konnten keine passenden Förderprogramme gefunden werden.
+              Bitte überprüfen Sie Ihre Angaben oder kontaktieren Sie einen Energieberater.</p>
+            `;
+            resultContainer.classList.add('visible');
+          }
+        } catch (error) {
+          empfehlungenDiv.innerHTML = `
+            <p class="error">Bei der Berechnung ist ein Fehler aufgetreten:
+            ${error.message}. Bitte versuchen Sie es später erneut.</p>
+          `;
+          resultContainer.classList.add('visible');
+          console.error('Fehler:', error);
+        } finally {
+          loading.style.display = 'none';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
