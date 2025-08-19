@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fördermittelcheck | Energie-Effizienzexperte</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Fördermittelcheck für Ihre Sanierung</h1>
+        <form id="sanierungsForm">
+            <div class="form-group">
+                <label for="baujahr">Baujahr:</label>
+                <select id="baujahr" required>
+                    <option value="">-- Bitte wählen --</option>
+                    <option value="vor_1978">vor 1978</option>
+                    <option value="1978_2002">1978–2002</option>
+                    <option value="nach_2002">nach 2002</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="wohnflaeche">Wohnfläche (m²):</label>
+                <input type="number" id="wohnflaeche" min="20" required>
+            </div>
+            <div class="form-group">
+                <label for="investition">Geplante Investition (€):</label>
+                <input type="number" id="investition" min="1000" required>
+            </div>
+            <div class="form-group">
+                <label for="plz">PLZ (für lokale Förderungen):</label>
+                <input type="text" id="plz" required>
+            </div>
+            <div class="form-group">
+                <label>Geplante Maßnahmen:</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="daemmung" value="Dämmung"> <label for="daemmung">Dämmung</label>
+                    <input type="checkbox" id="fenster" value="Fenster"> <label for="fenster">Fenster</label>
+                    <input type="checkbox" id="heizung" value="Heizung"> <label for="heizung">Heizungstausch</label>
+                    <input type="checkbox" id="pv" value="PV-Anlage"> <label for="pv">PV-Anlage</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="fileUpload">Stromrechnung/Bauplan (optional):</label>
+                <input type="file" id="fileUpload" accept=".csv,.xlsx,.pdf,.jpg">
+            </div>
+            <button type="submit">Förderung berechnen</button>
+        </form>
+        <div id="results"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
